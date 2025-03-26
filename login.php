@@ -17,7 +17,7 @@
             <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-xl transition duration-300">Login</button>
         </form>
 
-        <p class="text-gray-600 mt-4">Don't have an account? <a href="register.php" class="text-blue-600 font-semibold hover:underline">Register</a></p>
+        <p class="text-gray-600 mt-4">Don't have an account? <a href="C:\xampp\htdocs\OAS\project_OAS\student\dashboard.php" class="text-blue-600 font-semibold hover:underline">Register</a></p>
     </div>
 
 </body>
