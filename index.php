@@ -13,8 +13,8 @@
         <p class="text-gray-600 text-lg mb-6">Submit and track your assignments with ease.</p>
         
         <div class="flex justify-center space-x-4">
-            <a href="register.php" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-xl transition duration-300">Register</a>
-            <a href="login.php" class="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 hover:shadow-xl transition duration-300">Login</a>
+            <a href="auth\register.php" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-xl transition duration-300">Register</a>
+            <a href="auth\login.php" class="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 hover:shadow-xl transition duration-300">Login</a>
         </div>
     </div>
 
