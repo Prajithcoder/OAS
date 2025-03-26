@@ -29,12 +29,31 @@ $result = $conn->query($sql);
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                         <p class="text-lg font-medium">
-                            📄 <a href="<?= $row['file_path'] ?>" target="_blank" class="text-blue-500 hover:text-blue-700">View Assignment</a>
+                            📄 <a href="<?= htmlspecialchars($row['file_path']) ?>" target="_blank" class="text-blue-500 hover:text-blue-700">View Assignment</a>
                         </p>
                         <p class="text-gray-700 mt-1">
                             <strong>Status:</strong> 
                             <span class="<?= $row['status'] === 'reviewed' ? 'text-green-600' : 'text-yellow-600' ?>">
-                                <?= ucfirst($row['status']) ?>
+                                <?= ucfirst(htmlspecialchars($row['status'])) ?>
                             </span>
                         </p>
-                        <p class="text-gray
+                        <p class="text-gray-700">
+                            <strong>Marks:</strong> 
+                            <?= $row['marks'] !== null ? "<span class='text-blue-600 font-semibold'>" . htmlspecialchars($row['marks']) . "</span>" : "Not yet graded" ?>
+                        </p>
+                        <p class="text-sm text-gray-500">📅 Submitted on: <?= date("F j, Y, g:i a", strtotime($row['created_at'])) ?></p>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        <?php else: ?>
+            <p class="text-gray-600">No assignments submitted yet.</p>
+        <?php endif; ?>
+
+        <div class="mt-6">
+            <a href="dashboard.php" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
+
+<?php $conn->close(); ?>
