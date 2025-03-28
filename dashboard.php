@@ -10,4 +10,7 @@ if ($_SESSION['role'] == 'student') {
     header("Location: teacher/dashboard.php");
 }
 exit();
+
+}
+
 ?>
