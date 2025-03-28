@@ -11,7 +11,7 @@
     <div class="bg-white shadow-2xl rounded-xl p-10 max-w-md w-full text-center transform hover:scale-105 transition duration-300">
         <h2 class="text-3xl font-extrabold text-gray-800 mb-6">🔑 Login</h2>
 
-        <form action="http://localhost/OAS/project_OAS/dashboard.php" method="POST" class="space-y-4">
+        <form action="../dashboard.php" method="POST" class="space-y-4">
             <!-- Role Selection -->
             <select name="role" required class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                 <option value="">Select Role</option>

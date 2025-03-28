@@ -3,7 +3,7 @@ session_start();
 require '../config/db.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
-    header("Location: ..dashboard.php");
+    header("Location: ../dashboard.php");
     exit();
 }
 ?>
