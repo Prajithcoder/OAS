@@ -1,40 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Assignment Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+<?php
+session_start();
+require '../config/db.php'; // Ensure this points to your database connection file
 
-    <div class="bg-white shadow-2xl rounded-xl p-10 max-w-md w-full text-center transform hover:scale-105 transition duration-300">
-        <h2 class="text-3xl font-extrabold text-gray-800 mb-6">🔑 Login</h2>
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    $role = trim($_POST['role']);
 
-        <form action="../dashboard.php" method="POST" class="space-y-4">
-            <!-- Role Selection -->
-            <select name="role" required class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                <option value="">Select Role</option>
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-            </select>
+    // Validate user credentials (Replace this with your actual DB query)
+    $stmt = $conn->prepare("SELECT id, role, password FROM users WHERE email = ? AND role = ?");
+    $stmt->bind_param("ss", $email, $role);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-            <!-- Email Input -->
-            <input type="email" name="email" placeholder="Email" required class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-            
-            <!-- Password Input -->
-            <input type="password" name="password" placeholder="Password" required class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-            
-            <!-- Submit Button -->
-            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-xl transition duration-300">
-                Login
-            </button>
-        </form>
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
 
-        <p class="text-gray-600 mt-4">Don't have an account? 
-            <a href="../auth/register.php" class="text-blue-600 font-semibold hover:underline">Register</a>
-        </p>
-    </div>
+        // Verify password (assuming passwords are hashed)
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
 
-</body>
-</html>
+            // 🔹 Redirect user based on role
+            if ($user['role'] == "student") {
+                header("Location: ../student/dashboard.php");
+                exit();
+            } elseif ($user['role'] == "teacher") {
+                header("Location: ../teacher/dashboard.php");
+                exit();
+            } else {
+                echo "Invalid user role!";
+            }
+        } else {
+            echo "Invalid password!";
+        }
+    } else {
+        echo "User not found!";
+    }
+}
+?>
