@@ -11,6 +11,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
 // Fetch assignments that need grading
 $sql = "SELECT * FROM assignments WHERE status = 'submitted'";
 $result = mysqli_query($conn, $sql);
+
+while ($row = mysqli_fetch_assoc($result)) {
+    var_dump($row);  // Debugging
+}
+
 ?>
 
 <!DOCTYPE html>
