@@ -2,42 +2,15 @@
 session_start();
 require '../config/db.php';
 
+// Check if the user is a teacher
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../auth/login.php");
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $assignment_id = $_POST['assignment_id'];
-    $marks = $_POST['marks'];
-    $teacher_id = $_SESSION['user_id'];
-
-    $stmt = $conn->prepare("UPDATE assignments SET marks = ?, status = 'reviewed', teacher_id = ? WHERE id = ?");
-    $stmt->bind_param("iii", $marks, $teacher_id, $assignment_id);
-    
-    if ($stmt->execute()) {
-        $success_message = "Marks assigned successfully!";
-    } else {
-        $error_message = "Error: " . $stmt->error;
-    }
-
-    $stmt->close();
-}
-
-// Fetch assignment details
-if (isset($_GET['id'])) {
-    $assignment_id = $_GET['id'];
-    $sql = "SELECT assignments.id, users.name AS student_name, assignments.file_path 
-            FROM assignments 
-            JOIN users ON assignments.student_id = users.id 
-            WHERE assignments.id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $assignment_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $stmt->close();
-}
+// Fetch assignments that need grading
+$sql = "SELECT * FROM assignments WHERE status = 'submitted'";
+$result = mysqli_query($conn, $sql);
 ?>
 
 <!DOCTYPE html>
@@ -45,39 +18,37 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assign Marks</title>
+    <title>Assignments to Grade</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="max-w-lg w-full bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Assign Marks</h2>
+<body class="bg-gray-100 min-h-screen">
 
-        <?php if (isset($success_message)): ?>
-            <p class="text-green-600 mb-4"> <?= $success_message ?> </p>
-        <?php elseif (isset($error_message)): ?>
-            <p class="text-red-600 mb-4"> <?= $error_message ?> </p>
-        <?php endif; ?>
+    <div class="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Assignments to Grade</h2>
 
-        <?php if ($row): ?>
-            <p class="text-gray-700 mb-2"><strong>Student:</strong> <?= htmlspecialchars($row['student_name']) ?></p>
-            <p class="text-gray-700 mb-4">
-                <strong>Assignment:</strong> 
-                <a href="<?= htmlspecialchars($row['file_path']) ?>" class="text-blue-500 underline" target="_blank">View Submission</a>
-            </p>
-
-            <form method="post" class="space-y-4">
-                <input type="hidden" name="assignment_id" value="<?= $row['id'] ?>">
-                <label class="block">
-                    <span class="text-gray-700">Marks</span>
-                    <input type="number" name="marks" class="mt-1 block w-full p-2 border rounded-md" required>
-                </label>
-                <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
-                    Submit Marks
-                </button>
-            </form>
-        <?php else: ?>
-            <p class="text-red-600">Invalid assignment ID.</p>
-        <?php endif; ?>
+        <table class="w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-blue-500 text-white">
+                    <th class="border p-3">Assignment ID</th>
+                    <th class="border p-3">Student Name</th>
+                    <th class="border p-3">Submission Date</th>
+                    <th class="border p-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                <tr class="text-center bg-gray-50 hover:bg-gray-100">
+                    <td class="border p-3"><?= $row['id'] ?></td>
+                    <td class="border p-3"><?= $row['student_name'] ?></td>
+                    <td class="border p-3"><?= $row['submission_date'] ?></td>
+                    <td class="border p-3">
+                        <a href="grade.php?assignment_id=<?= $row['id'] ?>" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Grade</a>
+                    </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+        </table>
     </div>
+
 </body>
 </html>
