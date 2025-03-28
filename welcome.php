@@ -12,7 +12,7 @@
         <h1 class="text-3xl font-extrabold text-gray-800 mb-6">📚 Welcome to the Assignment Portal</h1>
         <p class="text-gray-600 mb-4">Please select your role to continue.</p>
 
-        <form action="auth/login.php" method="GET">
+        <form action="index.php" method="GET">
             <select name="role" required class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                 <option value="" disabled selected>Select Role</option>
                 <option value="student">Student</option>
