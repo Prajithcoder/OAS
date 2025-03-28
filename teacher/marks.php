@@ -30,9 +30,13 @@ if (isset($_GET['id'])) {
     $sql = "SELECT assignments.id, users.name AS student_name, assignments.file_path 
             FROM assignments 
             JOIN users ON assignments.student_id = users.id 
-            WHERE assignments.id = $assignment_id";
-    $result = $conn->query($sql);
+            WHERE assignments.id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $assignment_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $row = $result->fetch_assoc();
+    $stmt->close();
 }
 ?>
 
@@ -49,4 +53,31 @@ if (isset($_GET['id'])) {
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">Assign Marks</h2>
 
         <?php if (isset($success_message)): ?>
-            <p class="text-green
+            <p class="text-green-600 mb-4"> <?= $success_message ?> </p>
+        <?php elseif (isset($error_message)): ?>
+            <p class="text-red-600 mb-4"> <?= $error_message ?> </p>
+        <?php endif; ?>
+
+        <?php if ($row): ?>
+            <p class="text-gray-700 mb-2"><strong>Student:</strong> <?= htmlspecialchars($row['student_name']) ?></p>
+            <p class="text-gray-700 mb-4">
+                <strong>Assignment:</strong> 
+                <a href="<?= htmlspecialchars($row['file_path']) ?>" class="text-blue-500 underline" target="_blank">View Submission</a>
+            </p>
+
+            <form method="post" class="space-y-4">
+                <input type="hidden" name="assignment_id" value="<?= $row['id'] ?>">
+                <label class="block">
+                    <span class="text-gray-700">Marks</span>
+                    <input type="number" name="marks" class="mt-1 block w-full p-2 border rounded-md" required>
+                </label>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+                    Submit Marks
+                </button>
+            </form>
+        <?php else: ?>
+            <p class="text-red-600">Invalid assignment ID.</p>
+        <?php endif; ?>
+    </div>
+</body>
+</html>
